@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+button{
+    cursor: pointer;
+}
+
+.lluLhV{
+    max-width: 100%!important;
+}
+
+.cursor-not-allowed{
+    cursor: not-allowed!important;
+}
