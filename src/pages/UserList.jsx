@@ -9,6 +9,7 @@ import Modal from '../components/Modal';
 export const UserList = () => {
   const navigate = useNavigate();
   const searchInputRef = useRef(null);
+  const [design, setDesign] = useState('dataTable');
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -218,7 +219,7 @@ export const UserList = () => {
             <button
               key={page}
               onClick={() => onChangePage(page)}
-              className={`px-3 py-1 rounded-md ${currentPage === page ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+              className={`px-3 py-1 rounded-md ${currentPage === page ? 'bg-indigo-500 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
             >
               {page}
             </button>
@@ -250,7 +251,7 @@ export const UserList = () => {
             />
           ) : (
             <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
-              <User className="h-5 w-5 text-indigo-600" />
+              <User className="h-5 w-5 text-indigo-500" />
             </div>
           )}
           <div>
@@ -277,7 +278,7 @@ export const UserList = () => {
         <div className="flex w-full space-x-2">
           <button
             onClick={() => openEditModal(row)}
-            className="mt-3 md:mt-0 w-full flex items-center justify-center bg-indigo-50 p-2 text-indigo-600 hover:bg-indigo-100 rounded-md transition-colors duration-200"
+            className="mt-3 md:mt-0 w-full flex items-center justify-center bg-indigo-50 p-2 text-indigo-500 hover:bg-indigo-100 rounded-md transition-colors duration-200"
             title="Edit"
           >
             <Edit2 className="h-4 w-4" />
@@ -301,9 +302,32 @@ export const UserList = () => {
     },
   ];
 
+  console.log(filteredUsers)
+
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-end mb-6">
+          <div className="inline-flex rounded-md" role="group">
+            <button
+              onClick={() => setDesign('dataTable')}
+              className={`px-4 py-2 text-sm font-medium rounded-l-lg border ${design === 'dataTable'
+                ? 'bg-indigo-500 text-white border-indigo-500'
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`}
+            >
+              Table View
+            </button>
+            <button
+              onClick={() => setDesign('custom')}
+              className={`px-4 py-2 text-sm font-medium rounded-r-lg border ${design === 'custom'
+                ? 'bg-indigo-500 text-white border-indigo-500'
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`}
+            >
+              Card View
+            </button>
+          </div>
+        </div>
+
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
           <div className="p-6 border-b border-gray-200">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
@@ -324,6 +348,14 @@ export const UserList = () => {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
+                  {searchTerm && (
+                    <button
+                      onClick={() => setSearchTerm('')}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    >
+                      <X className="h-4 w-4 text-gray-400 hover:text-gray-500" />
+                    </button>
+                  )}
                 </div>
                 <button
                   onClick={handleLogout}
@@ -336,32 +368,128 @@ export const UserList = () => {
             </div>
           </div>
 
-          <div className="md:p-6">
-            <DataTable
-              columns={columns}
-              data={filteredUsers}
-              progressPending={loading}
-              pagination
-              paginationServer
-              paginationTotalRows={totalRows}
-              onChangeRowsPerPage={handlePerRowsChange}
-              onChangePage={handlePageChange}
-              customStyles={customStyles}
-              responsive
-              paginationComponent={CustomPagination}
-              noDataComponent={
-                <div className="py-12 text-center">
-                  <div className="mx-auto h-16 w-16 text-gray-400">
-                    <User className="h-full w-full" />
+          {design === 'custom' ? (
+            <div className="p-4 md:p-6">
+              {loading ? (
+                <div className="flex justify-center items-center h-64">
+                  <LoaderCircleIcon className="animate-spin h-8 w-8 text-indigo-500" />
+                </div>
+              ) : filteredUsers.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="mx-auto h-24 w-24 text-gray-400">
+                    <User className="w-full h-full" />
                   </div>
-                  <h3 className="mt-2 text-sm font-medium text-gray-900">No users found</h3>
+                  <h3 className="mt-2 text-lg font-medium text-gray-900">No users found</h3>
                   <p className="mt-1 text-sm text-gray-500">
-                    {searchTerm ? 'Try a different search term' : 'Get started by adding a new user'}
+                    {searchTerm ? 'Try a different search term' : 'No users available'}
                   </p>
                 </div>
-              }
-            />
-          </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {filteredUsers.map(user => (
+                      <div key={user.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
+                        <div className="p-5">
+                          <div className="flex items-center">
+                            {user.avatar ? (
+                              <img
+                                src={user.avatar}
+                                alt={`${user.first_name} ${user.last_name}`}
+                                className="h-12 w-12 rounded-full object-cover"
+                              />
+                            ) : (
+                              <div className="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center">
+                                <User className="h-6 w-6 text-indigo-500" />
+                              </div>
+                            )}
+                            <div className="ml-4">
+                              <h3 className="text-lg font-medium text-gray-900">
+                                {user.first_name} {user.last_name}
+                              </h3>
+                              <p className="text-sm text-gray-500 truncate">{user.email}</p>
+                            </div>
+                          </div>
+                          <div className="mt-4 flex items-center justify-between">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.status === 'Inactive'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-green-100 text-green-800'
+                              }`}>
+                              {user.status || 'Active'}
+                            </span>
+                            <span className="text-xs text-gray-500">
+                              ID: {user.id}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="bg-gray-50 px-5 py-3 flex justify-between space-x-3">
+                          <button
+                            onClick={() => openEditModal(user)}
+                            className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          >
+                            <Edit2 className="mr-1.5 h-3 w-3" /> Edit
+                          </button>
+                          <button
+                            onClick={() => {
+                              setCurrentUser(user);
+                              setIsDeleteModalOpen(true);
+                            }}
+                            className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                          >
+                            <Trash2 className="mr-1.5 h-3 w-3" /> Delete
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-6 flex items-center justify-between px-2">
+                    <div className="text-sm text-gray-500">
+                      Showing <span className="font-medium">{(page - 1) * perPage + 1}</span> to{' '}
+                      <span className="font-medium">{Math.min(page * perPage, totalRows)}</span> of{' '}
+                      <span className="font-medium">{totalRows}</span> users
+                    </div>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handlePageChange(Math.max(1, page - 1))}
+                        disabled={page === 1}
+                        className={`px-3 py-1 rounded-md border ${page === 1
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
+                          : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-300'}`}
+                      >
+                        <ChevronLeft className="h-5 w-5" />
+                      </button>
+                      <button
+                        onClick={() => handlePageChange(Math.min(Math.ceil(totalRows / perPage), page + 1))}
+                        disabled={page === Math.ceil(totalRows / perPage)}
+                        className={`px-3 py-1 rounded-md border ${page === Math.ceil(totalRows / perPage)
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
+                          : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-300'}`}
+                      >
+                        <ChevronRight className="h-5 w-5" />
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          ) : (
+            <div className="md:p-6">
+              <DataTable
+                columns={columns}
+                data={filteredUsers}
+                customStyles={customStyles}
+                pagination
+                paginationServer
+                paginationComponent={CustomPagination}
+                paginationPerPage={perPage}
+                paginationRowsPerPageOptions={[5, 10, 20]}
+                paginationTotalRows={totalRows}
+                onChangePage={handlePageChange}
+                onChangeRowsPerPage={handlePerRowsChange}
+                progressPending={loading}
+                progressComponent={<LoaderCircleIcon className="animate-spin h-12 w-12 text-indigo-500" />}
+              />
+            </div>
+          )}
         </div>
 
         {isEditModalOpen && currentUser && (
@@ -431,7 +559,7 @@ export const UserList = () => {
                 <button
                   disabled={loading}
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <span className="flex items-center">

@@ -87,7 +87,7 @@ export const Login = () => {
       <div className="max-w-md w-full space-y-6 bg-white p-8 rounded-xl shadow-lg border border-gray-100">
         <div className="text-center">
           <div className="bg-indigo-100 p-3 rounded-full inline-flex">
-            <LogIn className="h-8 w-8 text-indigo-600" />
+            <LogIn className="h-8 w-8 text-indigo-500" />
           </div>
           <h2 className="mt-6 text-2xl font-bold text-gray-900">Welcome back</h2>
           <p className="mt-2 text-sm text-gray-600">Please enter your credentials to login</p>
@@ -162,7 +162,7 @@ export const Login = () => {
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
-                  className="mt-1 text-sm text-red-600 flex items-start"
+                  className="mt-1 text-sm text-red-500 flex items-start"
                 >
                   <AlertCircle className="h-4 w-4 mr-1 mt-0.5 flex-shrink-0" />
                   <span>{errors.password}</span>
@@ -174,7 +174,7 @@ export const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-3 px-4 rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full flex justify-center py-3 px-4 rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {loading ? (
               <span className="flex items-center">
